@@ -1,9 +1,9 @@
 node("ci-node") {
 	def GIT_COMMIT_HASH = ""
 
-	stage("Checkout") {
+	stage("Checkout"){
 		checkout scm
-		GIT_COMMIT_HASH = sh(script: "git log -n 1 --pretty=format:%h", returnStdout: true).trim()
+		GIT_COMMIT_HASH = sh (script: "git log -n 1 --pretty=format:'%H'", returnStdout: true)
 	}
 
 	/*
@@ -25,8 +25,10 @@ node("ci-node") {
 	}
 	*/
 
-	stage("Build Jar file") {
-		sh "chmod +x mvnw && ./mvnw package -DskipTests"
+	stage("Build Jar file"){
+
+		sh 'chmod +x mvnw'
+		sh './mvnw package -DskipTests'
 	}
 
 	stage("Build Docker Image") {
@@ -34,7 +36,7 @@ node("ci-node") {
 	}
 
 	stage("Push Docker Image") {
-		withCredentials([usernamePassword(credentialsId: 'mchekini', usernameVariable: 'username', passwordVariable: 'password')]) {
+		withCredentials([usernamePassword(credentialsId: 'mchekini', passwordVariable: 'password', usernameVariable: 'username')]) {
 			sh "sudo docker login -u $username -p $password"
 			sh "sudo docker push mchekini/api-for-monitoring:${GIT_COMMIT_HASH}"
 			sh "sudo docker rmi mchekini/api-for-monitoring:${GIT_COMMIT_HASH}"
