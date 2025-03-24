@@ -1,0 +1,74 @@
+services:
+  api-db:
+    image: postgres
+    container_name: api-db
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - monitoring
+
+  api-monitoring:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: api-monitoring
+    depends_on:
+      - api-db
+    ports:
+      - "8080:8080"
+    networks:
+      - monitoring
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: always
+    volumes:
+      - prometheus_data:/prometheus
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: always
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: "admin"
+      GF_SMTP_ENABLED: "true"
+      GF_SMTP_HOST: "smtp.gmail.com:587"
+      GF_SMTP_USER: "jubatouam61@gmail.com"
+      GF_SMTP_PASSWORD: "tjnpbtytxzjxxpzr"
+      GF_SMTP_FROM_ADDRESS: "jubatouam61@gmail.com"
+      GF_SMTP_FROM_NAME: "Grafana Alerts"
+      GF_SMTP_SKIP_VERIFY: "false"
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - monitoring
+
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: alertmanager
+    restart: always
+    ports:
+      - "9093:9093"
+    networks:
+      - monitoring
+
+volumes:
+  postgres_data:
+  prometheus_data:
+
+networks:
+  monitoring:
+    driver: bridge
