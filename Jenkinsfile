@@ -6,24 +6,27 @@ node("ci-node") {
 		GIT_COMMIT_HASH = sh(script: "git log -n 1 --pretty=format:%h", returnStdout: true).trim()
 	}
 
-	//stage("Unit tests") {
-	//	sh "chmod +x mvnw && ./mvnw clean test"
-	//}
+	/*
+	stage("Unit tests") {
+		sh "chmod +x mvnw && ./mvnw clean test"
+	}
 
-	//stage("Quality Analysis") {
-		//withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
-		//	sh """
-          //      ./mvnw clean verify sonar:sonar \\
-           //       -Dsonar.projectKey=api-for-monitoring \\
-             //     -Dsonar.projectName='api-for-monitoring' \\
-               //   -Dsonar.host.url=https://sonar.check-consulting.net \\
-                 // -Dsonar.token=${SONAR_TOKEN}
-          // """
-	//	}
-	//}
+	stage("Quality Analysis") {
+		withCredentials([string(credentialsId: 'sonar-token', variable: 'SONAR_TOKEN')]) {
+			sh """
+				chmod +x mvnw
+				./mvnw clean verify sonar:sonar \\
+					-Dsonar.projectKey=api-for-monitoring \\
+					-Dsonar.projectName='api-for-monitoring' \\
+					-Dsonar.host.url=https://sonar.check-consulting.net \\
+					-Dsonar.token=${SONAR_TOKEN}
+			"""
+		}
+	}
+	*/
 
 	stage("Build Jar file") {
-		sh "./mvnw package -DskipTests"
+		sh "chmod +x mvnw && ./mvnw package -DskipTests"
 	}
 
 	stage("Build Docker Image") {
