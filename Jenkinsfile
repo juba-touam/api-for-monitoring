@@ -32,7 +32,7 @@ node("ci-node") {
 	}
 
 	stage("Build Docker Image") {
-		sh "docker build -t mchekini/api-for-monitoring:${GIT_COMMIT_HASH} ."
+		sh "sudo docker build -t mchekini/api-for-monitoring:${GIT_COMMIT_HASH} ."
 	}
 
 	stage("Push Docker Image") {
