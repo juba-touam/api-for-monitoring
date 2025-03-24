@@ -35,9 +35,9 @@ node("ci-node") {
 
 	stage("Push Docker Image") {
 		withCredentials([usernamePassword(credentialsId: 'mchekini', usernameVariable: 'username', passwordVariable: 'password')]) {
-			sh "echo \$password | docker login -u \$username --password-stdin"
-			sh "docker push mchekini/api-for-monitoring:${GIT_COMMIT_HASH}"
-			sh "docker rmi mchekini/api-for-monitoring:${GIT_COMMIT_HASH}"
+			sh "sudo docker login -u $username -p $password"
+			sh "sudo docker push mchekini/api-for-monitoring:${GIT_COMMIT_HASH}"
+			sh "sudo docker rmi mchekini/api-for-monitoring:${GIT_COMMIT_HASH}"
 		}
 	}
 }
